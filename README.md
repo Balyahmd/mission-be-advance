@@ -76,7 +76,7 @@ videobelajar-backend/
 │   └── uploadRoutes.js
 ├── services/
 │   └── emailService.js
-├── upload/
+├── uploads/
 ├── .env
 ├── .gitignore
 ├── app.js
