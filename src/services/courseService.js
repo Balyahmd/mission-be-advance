@@ -18,16 +18,12 @@ const CourseService = {
 
     const where = {};
 
-    if (search) [
-      where.title = {
-        [Op.like]: `%${search}%`,
-      },
-      {
-      "$kategori.name_kategori$": {
-        [Op.like]: `%${search}%`,
-      },
-    },
-  ]
+    if (search) {
+      where[Op.or] = [
+        { title: { [Op.like]: `%${search}%` } },
+        { "$kategori.name_kategori$": { [Op.like]: `%${search}%` } },
+      ];
+    }
 
     if (kategori_id) {
       where.kategori_id = kategori_id;
@@ -40,12 +36,9 @@ const CourseService = {
       "createdAt",
     ];
 
-    const sortField = allowedSort.includes(sort)
-      ? sort
-      : "createdAt";
+    const sortField = allowedSort.includes(sort) ? sort : "createdAt";
 
-    const sortOrder =
-      order.toUpperCase() === "ASC" ? "ASC" : "DESC";
+    const sortOrder = order.toUpperCase() === "ASC" ? "ASC" : "DESC";
 
     const result = await Kelas.findAndCountAll({
       where,
@@ -73,9 +66,7 @@ const CourseService = {
         page: pageNumber,
         limit: limitNumber,
         totalData: result.count,
-        totalPage: Math.ceil(
-          result.count / limitNumber
-        ),
+        totalPage: Math.ceil(result.count / limitNumber),
       },
     };
   },
@@ -97,9 +88,7 @@ const CourseService = {
     });
 
     if (!course) {
-      const error = new Error(
-        "Course tidak ditemukan"
-      );
+      const error = new Error("Course tidak ditemukan");
       error.statusCode = 404;
       throw error;
     }
@@ -117,13 +106,10 @@ const CourseService = {
       discount_price,
     } = data;
 
-    const kategori =
-      await KategoriKelas.findByPk(kategori_id);
+    const kategori = await KategoriKelas.findByPk(kategori_id);
 
     if (!kategori) {
-      const error = new Error(
-        "Kategori tidak ditemukan"
-      );
+      const error = new Error("Kategori tidak ditemukan");
       error.statusCode = 404;
       throw error;
     }
@@ -131,9 +117,7 @@ const CourseService = {
     const tutor = await Tutor.findByPk(tutor_id);
 
     if (!tutor) {
-      const error = new Error(
-        "Tutor tidak ditemukan"
-      );
+      const error = new Error("Tutor tidak ditemukan");
       error.statusCode = 404;
       throw error;
     }
@@ -152,9 +136,7 @@ const CourseService = {
   updateCourse: async (id, data) => {
     const course = await Kelas.findByPk(id);
     if (!course) {
-      const error = new Error(
-        "Course tidak ditemukan"
-      );
+      const error = new Error("Course tidak ditemukan");
       error.statusCode = 404;
       throw error;
     }
@@ -165,9 +147,7 @@ const CourseService = {
   deleteCourse: async (id) => {
     const course = await Kelas.findByPk(id);
     if (!course) {
-      const error = new Error(
-        "Course tidak ditemukan"
-      );
+      const error = new Error("Course tidak ditemukan");
       error.statusCode = 404;
       throw error;
     }

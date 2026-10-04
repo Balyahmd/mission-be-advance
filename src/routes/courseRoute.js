@@ -11,28 +11,28 @@ router.get(
   courseController.getList
 );
 
-router.get(
-  "/courses/:id",
-  authMiddleware.verifyToken,
-  courseController.getDetail
-);
+// router.get(
+//   "/courses/:id",
+//   authMiddleware.verifyToken,
+//   courseController.getDetail
+// );
 
-router.post(
-  "/courses",
-  authMiddleware.verifyToken,
-  courseController.create
-);
+// router.post(
+//   "/courses",
+//   authMiddleware.verifyToken,
+//   courseController.create
+// );
 
-router.patch(
-  "/courses/:id",
-  authMiddleware.verifyToken,
-  courseController.update
-);
+// router.patch(
+//   "/courses/:id",
+//   authMiddleware.verifyToken,
+//   courseController.update
+// );
 
-router.delete(
-  "/courses/:id",
-  authMiddleware.verifyToken,
-  courseController.remove
-);
+// router.delete(
+//   "/courses/:id",
+//   authMiddleware.verifyToken,
+//   courseController.remove
+// );
 
 export default router;

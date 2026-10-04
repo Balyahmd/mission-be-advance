@@ -7,7 +7,7 @@ Sistem backend RESTful API untuk **Video Belajar App** yang dibangun menggunakan
 * **Runtime & Framework:** Node.js, Express.js
 * **Database:** MySQL / PostgreSQL
 * **Security & Auth:** `bcrypt` (Hashing Password), `jsonwebtoken` (JWT)
-* **Email Service:** `nodemailer`, `uuid`, Mailtrap (Testing SMTP)
+* **Email Service:** `nodemailer`, `uuid`, Mailtrap
 * **File Processing:** `multer`
 
 ## 🚀 Fitur Utama & Alur Implementasi
@@ -60,22 +60,31 @@ Modifikasi service `GET all DATA` untuk Video Belajar App agar menangani:
 ## 📁 Struktur Direktori Proyek
 
 ```
-videobelajar-backend/
+mission-be-advance/
 ├── config/
-│   └── db.js
+│   └── database.js
 ├── controllers/
 │   ├── authController.js
-│   ├── videoController.js
+│   ├── courseController.js
 │   └── uploadController.js
+├── database/
+│   ├── migrations
+│   └── seeders
 ├── middlewares/
-│   ├── authMiddleware.js
-│   └── uploadMiddleware.js
+│   └── authMiddleware.js
 ├── routes/
 │   ├── authRoutes.js
-│   ├── videoRoutes.js
+│   ├── courseRoutes.js
 │   └── uploadRoutes.js
+├── models/
+│   ├── kelas.js
+│   └── users.js
 ├── services/
-│   └── emailService.js
+│   ├── courseService.js
+│   └── authService.js
+├── utils/
+│   ├── sendEmail.js
+│   └── uploadMulter.js
 ├── uploads/
 ├── .env
 ├── .gitignore
@@ -89,8 +98,8 @@ videobelajar-backend/
 ### 1. Clone Repository & Install Dependensi
 
 ```bash
-git clone https://github.com/username/videobelajar-backend.git
-cd videobelajar-backend
+git clone 
+cd mission-be-advance
 npm install
 ```
 
@@ -101,20 +110,28 @@ Buat file `.env` di direktori utama dan sesuaikan konfigurasinya dengan kredensi
 ```env
 PORT=5000
 DB_HOST=localhost
-DB_USER=root
+DB_USER=youtuser_db
 DB_PASSWORD=yourpassword
 DB_NAME=videobelajar_db
 
 JWT_SECRET=your_jwt_secret_key
 
 # Mailtrap SMTP Configuration
-MAIL_HOST=sandbox.smtp.mailtrap.io
-MAIL_PORT=2525
+MAIL_HOST=your mail_host
+MAIL_PORT=your_mail_port
 MAIL_USER=your_mailtrap_user_id
 MAIL_PASS=your_mailtrap_password
 ```
 
-### 3. Jalankan Aplikasi
+### 3. Jalankan migrasi database
+```bash
+npm run migrate
+```
+### 4. Jalankan seeder (jika ada)
+```bash
+npm run seed
+```
+### 5. Jalankan Aplikasi
 
 ```bash
 # Mode Development
@@ -123,6 +140,7 @@ npm run dev
 # Mode Production
 npm start
 ```
+
 
 ## 📌 Endpoint API Utama
 
