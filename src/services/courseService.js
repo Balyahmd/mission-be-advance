@@ -2,74 +2,75 @@ import { Op } from "sequelize";
 import { Kelas, KategoriKelas, Tutor } from "../models/index.js";
 
 const CourseService = {
-  getAllCourses: async (query) => {
-    const {
-      search,
-      kategori_id,
-      sort = "createdAt",
-      order = "DESC",
-      page = 1,
-      limit = 10,
-    } = query;
+ getAllCourses: async (query = {}) => {
+  const {
+    search,
+    sort = "createdAt",
+    order = "DESC",
+  } = query;
 
-    const pageNumber = Number(page);
-    const limitNumber = Number(limit);
-    const offset = (pageNumber - 1) * limitNumber;
+  const pageNumber = Math.max(parseInt(query.page, 10) || 1, 1);
+  const limitNumber = Math.min(Math.max(parseInt(query.limit, 10) || 10, 1), 100);
+  const offset = (pageNumber - 1) * limitNumber;
 
-    const where = {};
+  const emptyResult = () => ({
+    data: [],
+    pagination: {
+      page: pageNumber,
+      limit: limitNumber,
+      totalData: 0,
+      totalPage: 0,
+    },
+  });
 
-    if (search) {
+  const where = {};
+
+  if (search) {
+    const keyword = String(search).trim();
+    if (keyword) {
       where[Op.or] = [
-        { title: { [Op.like]: `%${search}%` } },
-        { "$kategori.name_kategori$": { [Op.like]: `%${search}%` } },
+        { title: { [Op.like]: `%${keyword}%` } },
+        { "$kategori.name_kategori$": { [Op.like]: `%${keyword}%` } },
       ];
     }
+  }
 
-    if (kategori_id) {
-      where.kategori_id = kategori_id;
-    }
+  // Sorting
+  const allowedSort = ["title", "normal_price", "discount_price", "createdAt"];
+  const sortField = allowedSort.includes(sort) ? sort : "createdAt";
+  const sortOrder = String(order).toUpperCase() === "ASC" ? "ASC" : "DESC";
 
-    const allowedSort = [
-      "title",
-      "normal_price",
-      "discount_price",
-      "createdAt",
-    ];
-
-    const sortField = allowedSort.includes(sort) ? sort : "createdAt";
-
-    const sortOrder = order.toUpperCase() === "ASC" ? "ASC" : "DESC";
-
-    const result = await Kelas.findAndCountAll({
-      where,
-      include: [
-        {
-          model: KategoriKelas,
-          as: "kategori",
-          attributes: ["id", "name_kategori"],
-        },
-        {
-          model: Tutor,
-          as: "tutor",
-          attributes: ["id", "user_id", "expertise"],
-        },
-      ],
-      order: [[sortField, sortOrder]],
-      limit: limitNumber,
-      offset,
-      distinct: true,
-    });
-
-    return {
-      data: result.rows,
-      pagination: {
-        page: pageNumber,
-        limit: limitNumber,
-        totalData: result.count,
-        totalPage: Math.ceil(result.count / limitNumber),
+  const result = await Kelas.findAndCountAll({
+    where,
+    include: [
+      {
+        model: KategoriKelas,
+        as: "kategori",
+        attributes: ["id", "name_kategori"],
       },
-    };
-  },
+      {
+        model: Tutor,
+        as: "tutor",
+        attributes: ["id", "user_id", "expertise"],
+      },
+    ],
+    order: [[sortField, sortOrder]],
+    limit: limitNumber,
+    offset,
+    distinct: true,
+    subQuery: false,
+  });
+
+  return {
+    data: result.rows,
+    pagination: {
+      page: pageNumber,
+      limit: limitNumber,
+      totalData: result.count,
+      totalPage: Math.ceil(result.count / limitNumber),
+    },
+  };
+},
 
   getCourseById: async (id) => {
     const course = await Kelas.findByPk(id, {
